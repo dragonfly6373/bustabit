@@ -36,7 +36,6 @@ engine.cashOuts; // An array of { wager: satoshis, uname: String, cashedAt: Floa
 /**
  * A Game object = engine.history.game:
  */
-
 game.id; // (integer)
 game.hash; // (string)
 game.bust; // (nullable float, ex: 1.32): The multiplier that the game crashed at. If it is not set, then the game is currently in progress.
