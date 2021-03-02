@@ -42,6 +42,7 @@ Fibonacci.prototype.saveLog = function(value) {
 }
 
 Fibonacci.prototype.showLogs = function() {
+    if (!this.bustLogs.length) return;
     log(this.bustLogs);
     this.bustLogs = [];
 }
@@ -52,7 +53,7 @@ Fibonacci.prototype.makeBet = function(engine) {
     }
     var betAmount = this.wager * this.baseBet;
     var message = "(" + this.bustLogs.length + ") makeBet(" + getBit(betAmount) + ", " + this.payout + ")";
-    log(message, engine.cashOut());
+    log(message);
     engine.bet(betAmount, this.payout);
 }
 
@@ -101,7 +102,6 @@ if (engine.gameState === "GAME_STARTING") {
 
 engine.on("GAME_STARTING", onGameStarted);
 engine.once("GAME_STARTING", () => engine.on("GAME_ENDED", onGameEnded));
-engine.on("CASHED_OUT", fibo.showLogs);
 
 function onGameStarted() {
     if (!fibo) fibo = new Fibonacci(config.baseBet.value, config.skippedPayout.value);
