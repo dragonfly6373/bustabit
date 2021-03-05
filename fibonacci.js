@@ -12,9 +12,9 @@ function roundBit(bet) {
 }
 
 // Fibonacci: 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144
-function Fibonacci(baseBet, skippedPayout) {
-    this.baseBet = baseBet;
-    this.skippedPayout = skippedPayout;
+function Fibonacci(config) {
+    this.baseBet = config.baseBet;
+    this.skippedPayout = config.skippedPayout;
 
     this.wager = 1;
     this.prevWager = 0;
@@ -89,10 +89,16 @@ Fibonacci.prototype.onLose = function(data) {
     this.payout = Math.max(2, this.nextPayout);
     this.nextPayout = p - this.payout;
     this.lost += this.wager;
-    this.wager += this.payout > 2 ? (this.prevWager = this.wager) : this.lost;
+    if (this.payout > 2) {
+        var nextWager = this.wager + this.prevWager;
+        this.prevWager = this.wager;
+        this.wager = nextWager;
+    } else {
+        this.wager = this.lost;
+    }
 }
 
-var fibo = new Fibonacci(config.baseBet.value, config.skippedPayout.value);
+var fibo = new Fibonacci({baseBet: config.baseBet.value, skippedPayout: config.skippedPayout.value});
 
 // Try to bet immediately when script starts
 if (engine.gameState === "GAME_STARTING") {
@@ -104,7 +110,7 @@ engine.on("GAME_STARTING", onGameStarted);
 engine.once("GAME_STARTING", () => engine.on("GAME_ENDED", onGameEnded));
 
 function onGameStarted() {
-    if (!fibo) fibo = new Fibonacci(config.baseBet.value, config.skippedPayout.value);
+    if (!fibo) fibo = new Fibonacci({baseBet: config.baseBet.value, skippedPayout: config.skippedPayout.value});
     fibo.makeBet(engine);
 }
 
